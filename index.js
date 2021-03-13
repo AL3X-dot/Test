@@ -20,7 +20,6 @@ io.on('connection',socket=>{
             roomId:id,
             msg:'Your room is created.'
         })
-        socket.to(id).emit('roomConfirmed',data)
     })
 
     socket.on('disconnect',()=>{
@@ -28,17 +27,35 @@ io.on('connection',socket=>{
     })
 
     socket.on('joinRoom',roomId=>{
-        // if(io.of("/").adapter.rooms[roomId] == null || io.of("/").adapter.rooms[roomId] == undefined){
-        //     console.log("Invalid room id");
-        //     socket.emit('roomNotFound',{
-        //         msg:'Room id is invalid or room does not exist',
-        //     })
-        // }else{
-        //     socket.join(roomId)
-        //     console.log(`${id} joined room ${roomId}`);
-        //     socket.emit('Room is joined')
-        // }
-        console.log(io.of("/").adapter.rooms);
+        var iterator = io.of("/").adapter.rooms
+        var flag = false
+        var status = ''
+        var msg = ''
+        if(iterator.size != 0){
+            for(const item of iterator){
+                if(roomId == item[0]){
+                    flag = true
+                    break
+                }
+            }
+        }
+        if(flag){
+            msg = 'Room joined successfully'
+            status = 'pass'
+            socket.join(roomId)
+            socket.broadcast.emit('roomJoined',{
+                roomId:roomId,
+                socketId:id,
+            })
+        }else{
+            msg = 'Invalid room id or room does not exist'
+            status = 'fail'
+        }
+        socket.emit('roomStatus',{
+            status:status,
+            msg:msg
+        })
+
     })
 
 })
