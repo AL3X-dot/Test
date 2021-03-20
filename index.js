@@ -58,7 +58,10 @@ io.on('connection',socket=>{
 
     })
 
+    socket.on('endRoom',()=>{
+        socket.emit('results',"These are the results of polling.")
+    })
+
 })
-io.on('disconnect',()=>console.log('User disconnected'))
 
 http.listen(3000,()=>console.log("Server port : 3000"))
